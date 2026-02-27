@@ -2,12 +2,17 @@ import express from 'express';
 import mongoose from 'mongoose';
 import multer from 'multer';
 import cors from 'cors';
+import path from 'path';
+import { fileURLToPath } from 'url';
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
 const app = express();
-const PORT = 5000;
+const PORT = process.env.PORT || 5000;
 
 // MongoDB Atlas connection
-const MONGO_URI = 'mongodb+srv://logeshkumar:logesh@mycluster.uvpms2r.mongodb.net/Portfolio?retryWrites=true&w=majority&appName=MyCluster';
+const MONGO_URI = process.env.MONGO_URI || 'mongodb+srv://logeshkumar:logesh@mycluster.uvpms2r.mongodb.net/Portfolio?retryWrites=true&w=majority&appName=MyCluster';
 
 mongoose.connect(MONGO_URI)
     .then(() => console.log('✅ Connected to MongoDB Atlas'))
@@ -226,6 +231,35 @@ app.put('/api/portfolio', async (req, res) => {
         console.error('Portfolio save error:', error);
         res.status(500).json({ error: error.message });
     }
+});
+
+// ─── LeetCode GraphQL Proxy ─────────────────────────────
+
+app.post('/leetcode-api/graphql', async (req, res) => {
+    try {
+        const response = await fetch('https://leetcode.com/graphql', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'Origin': 'https://leetcode.com',
+                'Referer': 'https://leetcode.com/',
+            },
+            body: JSON.stringify(req.body),
+        });
+        const data = await response.json();
+        res.json(data);
+    } catch (error) {
+        console.error('LeetCode proxy error:', error);
+        res.status(500).json({ error: 'Failed to fetch LeetCode data' });
+    }
+});
+
+// ─── Serve Frontend (Production) ────────────────────────
+
+app.use(express.static(path.join(__dirname, 'dist')));
+
+app.get('*', (req, res) => {
+    res.sendFile(path.join(__dirname, 'dist', 'index.html'));
 });
 
 // ─── Start Server ───────────────────────────────────────
