@@ -1,0 +1,523 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: 'Inter', system-ui, -apple-system, sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  background: #0a0a0f;
+  color: rgba(255, 255, 255, 0.92);
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+/* ── Custom Scrollbar (hidden) ── */
+::-webkit-scrollbar {
+  width: 0px;
+  display: none;
+}
+
+html {
+  scrollbar-width: none;
+}
+
+/* ── Ant Design Dark Overrides ── */
+.ant-layout {
+  background: transparent !important;
+}
+
+.ant-layout-header {
+  background: transparent !important;
+}
+
+.ant-layout-footer {
+  background: transparent !important;
+}
+
+.ant-card {
+  background: rgba(255, 255, 255, 0.03) !important;
+  border: 1px solid rgba(255, 255, 255, 0.06) !important;
+  border-radius: 16px !important;
+  color: rgba(255, 255, 255, 0.92) !important;
+  transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1) !important;
+}
+
+.ant-card:hover {
+  transform: translateY(-4px);
+  border-color: rgba(6, 214, 160, 0.2) !important;
+  box-shadow: 0 8px 32px rgba(6, 214, 160, 0.08) !important;
+}
+
+.ant-card .ant-card-head {
+  border-bottom: 1px solid rgba(255, 255, 255, 0.06) !important;
+  color: rgba(255, 255, 255, 0.92) !important;
+}
+
+.ant-card .ant-card-head-title {
+  color: rgba(255, 255, 255, 0.92) !important;
+}
+
+.ant-card .ant-card-body {
+  color: rgba(255, 255, 255, 0.75) !important;
+}
+
+.ant-statistic .ant-statistic-title {
+  color: rgba(255, 255, 255, 0.5) !important;
+}
+
+.ant-statistic .ant-statistic-content {
+  color: #06d6a0 !important;
+}
+
+.ant-timeline .ant-timeline-item-content {
+  color: rgba(255, 255, 255, 0.8) !important;
+}
+
+.ant-timeline .ant-timeline-item-label {
+  color: rgba(255, 255, 255, 0.6) !important;
+}
+
+.ant-tabs .ant-tabs-tab {
+  color: rgba(255, 255, 255, 0.5) !important;
+  transition: all 0.3s !important;
+}
+
+.ant-tabs .ant-tabs-tab:hover {
+  color: #06d6a0 !important;
+}
+
+.ant-tabs .ant-tabs-tab-active .ant-tabs-tab-btn {
+  color: #06d6a0 !important;
+}
+
+.ant-tabs .ant-tabs-ink-bar {
+  background: #06d6a0 !important;
+}
+
+.ant-tabs .ant-tabs-nav::before {
+  border-color: rgba(255, 255, 255, 0.06) !important;
+}
+
+.ant-tag {
+  background: rgba(6, 214, 160, 0.1) !important;
+  border: 1px solid rgba(6, 214, 160, 0.2) !important;
+  color: #06d6a0 !important;
+}
+
+.ant-tag-blue {
+  background: rgba(76, 201, 240, 0.1) !important;
+  border: 1px solid rgba(76, 201, 240, 0.2) !important;
+  color: #4cc9f0 !important;
+}
+
+.ant-tag-cyan {
+  background: rgba(6, 214, 160, 0.15) !important;
+  border: 1px solid rgba(6, 214, 160, 0.25) !important;
+  color: #06d6a0 !important;
+}
+
+.ant-progress .ant-progress-inner {
+  background: rgba(255, 255, 255, 0.06) !important;
+}
+
+.ant-modal .ant-modal-content {
+  background: #111119 !important;
+  border: 1px solid rgba(255, 255, 255, 0.06) !important;
+  border-radius: 16px !important;
+}
+
+.ant-modal .ant-modal-header {
+  background: transparent !important;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.06) !important;
+}
+
+.ant-modal .ant-modal-title {
+  color: rgba(255, 255, 255, 0.92) !important;
+}
+
+.ant-modal .ant-modal-close-x {
+  color: rgba(255, 255, 255, 0.5) !important;
+}
+
+.ant-modal .ant-modal-body {
+  color: rgba(255, 255, 255, 0.75) !important;
+}
+
+.ant-form-item-label>label {
+  color: rgba(255, 255, 255, 0.7) !important;
+}
+
+.ant-input,
+.ant-input-password,
+.ant-select-selector,
+.ant-picker {
+  background: rgba(255, 255, 255, 0.04) !important;
+  border-color: rgba(255, 255, 255, 0.1) !important;
+  color: rgba(255, 255, 255, 0.92) !important;
+  border-radius: 10px !important;
+}
+
+.ant-input::placeholder,
+.ant-input-password input::placeholder {
+  color: rgba(255, 255, 255, 0.3) !important;
+}
+
+.ant-input:focus,
+.ant-input-focused,
+.ant-input-password:focus,
+.ant-select-focused .ant-select-selector {
+  border-color: #06d6a0 !important;
+  box-shadow: 0 0 0 2px rgba(6, 214, 160, 0.1) !important;
+}
+
+.ant-select-dropdown {
+  background: #111119 !important;
+  border: 1px solid rgba(255, 255, 255, 0.08) !important;
+}
+
+.ant-select-item {
+  color: rgba(255, 255, 255, 0.7) !important;
+}
+
+.ant-select-item-option-active,
+.ant-select-item-option-selected {
+  background: rgba(6, 214, 160, 0.1) !important;
+  color: #06d6a0 !important;
+}
+
+.ant-slider .ant-slider-rail {
+  background: rgba(255, 255, 255, 0.06) !important;
+}
+
+.ant-slider .ant-slider-track {
+  background: linear-gradient(90deg, #06d6a0, #4cc9f0) !important;
+}
+
+.ant-slider .ant-slider-handle::after {
+  box-shadow: 0 0 0 2px #06d6a0 !important;
+  background: #0a0a0f !important;
+}
+
+.ant-btn-primary {
+  background: linear-gradient(135deg, #06d6a0, #4cc9f0) !important;
+  border: none !important;
+  color: #0a0a0f !important;
+  font-weight: 600 !important;
+  border-radius: 10px !important;
+  transition: all 0.3s !important;
+}
+
+.ant-btn-primary:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 4px 20px rgba(6, 214, 160, 0.3) !important;
+  opacity: 0.9;
+}
+
+.ant-btn-default {
+  background: rgba(255, 255, 255, 0.04) !important;
+  border: 1px solid rgba(255, 255, 255, 0.1) !important;
+  color: rgba(255, 255, 255, 0.8) !important;
+  border-radius: 10px !important;
+}
+
+.ant-btn-default:hover {
+  border-color: #06d6a0 !important;
+  color: #06d6a0 !important;
+}
+
+.ant-btn-link {
+  color: #4cc9f0 !important;
+}
+
+.ant-btn-link:hover {
+  color: #06d6a0 !important;
+}
+
+.ant-btn-text {
+  color: rgba(255, 255, 255, 0.6) !important;
+}
+
+.ant-btn-text:hover {
+  color: #06d6a0 !important;
+  background: rgba(6, 214, 160, 0.08) !important;
+}
+
+.ant-btn-dangerous {
+  color: #f72585 !important;
+  border-color: rgba(247, 37, 133, 0.3) !important;
+}
+
+.ant-dropdown-menu {
+  background: #111119 !important;
+  border: 1px solid rgba(255, 255, 255, 0.06) !important;
+  border-radius: 12px !important;
+}
+
+.ant-dropdown-menu-item {
+  color: rgba(255, 255, 255, 0.7) !important;
+}
+
+.ant-dropdown-menu-item:hover {
+  background: rgba(6, 214, 160, 0.08) !important;
+  color: #06d6a0 !important;
+}
+
+.ant-dropdown-menu-item-selected {
+  background: rgba(6, 214, 160, 0.12) !important;
+  color: #06d6a0 !important;
+}
+
+.ant-message .ant-message-notice-content {
+  background: #111119 !important;
+  border: 1px solid rgba(255, 255, 255, 0.06) !important;
+  color: rgba(255, 255, 255, 0.9) !important;
+  border-radius: 12px !important;
+}
+
+.ant-modal-confirm .ant-modal-confirm-title {
+  color: rgba(255, 255, 255, 0.92) !important;
+}
+
+.ant-modal-confirm .ant-modal-confirm-content {
+  color: rgba(255, 255, 255, 0.6) !important;
+}
+
+/* ── Glassmorphism Utilities ── */
+.glass {
+  background: rgba(255, 255, 255, 0.03);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid rgba(255, 255, 255, 0.06);
+}
+
+.glass-strong {
+  background: rgba(255, 255, 255, 0.06);
+  backdrop-filter: blur(40px);
+  -webkit-backdrop-filter: blur(40px);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+/* ── Animated Gradient Text ── */
+.gradient-text {
+  background: linear-gradient(135deg, #06d6a0, #4cc9f0, #7b5ea7, #06d6a0);
+  background-size: 300% 300%;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  animation: gradient-shift 6s ease infinite;
+}
+
+@keyframes gradient-shift {
+
+  0%,
+  100% {
+    background-position: 0% 50%;
+  }
+
+  50% {
+    background-position: 100% 50%;
+  }
+}
+
+/* ── Glow Borders ── */
+.glow-border {
+  position: relative;
+}
+
+.glow-border::before {
+  content: '';
+  position: absolute;
+  inset: -1px;
+  border-radius: inherit;
+  background: linear-gradient(135deg, rgba(6, 214, 160, 0.3), rgba(76, 201, 240, 0.3), rgba(123, 94, 167, 0.3));
+  z-index: -1;
+  opacity: 0;
+  transition: opacity 0.4s ease;
+}
+
+.glow-border:hover::before {
+  opacity: 1;
+}
+
+/* ── Floating Orbs (background effect) ── */
+.orb {
+  position: absolute;
+  border-radius: 50%;
+  filter: blur(80px);
+  opacity: 0.15;
+  pointer-events: none;
+}
+
+.orb-1 {
+  width: 500px;
+  height: 500px;
+  background: #06d6a0;
+  top: -200px;
+  right: -100px;
+  animation: float-1 12s ease-in-out infinite;
+}
+
+.orb-2 {
+  width: 400px;
+  height: 400px;
+  background: #4cc9f0;
+  bottom: -150px;
+  left: -100px;
+  animation: float-2 15s ease-in-out infinite;
+}
+
+.orb-3 {
+  width: 300px;
+  height: 300px;
+  background: #7b5ea7;
+  top: 40%;
+  left: 50%;
+  animation: float-3 10s ease-in-out infinite;
+}
+
+@keyframes float-1 {
+
+  0%,
+  100% {
+    transform: translate(0, 0) scale(1);
+  }
+
+  33% {
+    transform: translate(30px, -50px) scale(1.1);
+  }
+
+  66% {
+    transform: translate(-20px, 20px) scale(0.9);
+  }
+}
+
+@keyframes float-2 {
+
+  0%,
+  100% {
+    transform: translate(0, 0) scale(1);
+  }
+
+  33% {
+    transform: translate(-40px, -30px) scale(0.9);
+  }
+
+  66% {
+    transform: translate(50px, 30px) scale(1.1);
+  }
+}
+
+@keyframes float-3 {
+
+  0%,
+  100% {
+    transform: translate(-50%, 0) scale(1);
+  }
+
+  50% {
+    transform: translate(-50%, -40px) scale(1.15);
+  }
+}
+
+/* ── Fade & Slide In ── */
+@keyframes fadeSlideUp {
+  from {
+    opacity: 0;
+    transform: translateY(30px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.fade-slide-up {
+  animation: fadeSlideUp 0.6s ease-out;
+}
+
+/* ── Subtle Grid Background ── */
+.grid-bg {
+  background-image:
+    linear-gradient(rgba(255, 255, 255, 0.02) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255, 255, 255, 0.02) 1px, transparent 1px);
+  background-size: 60px 60px;
+}
+
+/* ── Progress Bar Glow ── */
+.ant-progress .ant-progress-bg {
+  box-shadow: 0 0 10px rgba(6, 214, 160, 0.4);
+}
+
+/* Remove any residual blue bottom line on cards in skills/certificates */
+.ant-card::after,
+.ant-card::before {
+  display: none !important;
+}
+
+.ant-card-bordered {
+  border-color: rgba(255, 255, 255, 0.06) !important;
+}
+
+.ant-progress .ant-progress-inner {
+  border: none !important;
+}
+
+.ant-progress .ant-progress-outer {
+  border: none !important;
+}
+
+/* Override any blue info color leaking through */
+.ant-progress .ant-progress-text {
+  color: rgba(255, 255, 255, 0.5) !important;
+}
+
+.ant-card .ant-card-actions {
+  border-top-color: rgba(255, 255, 255, 0.06) !important;
+  background: transparent !important;
+}
+
+/* Remove bottom blue border lines globally */
+.ant-card-hoverable:hover {
+  border-color: rgba(6, 214, 160, 0.2) !important;
+}
+
+.ant-layout-content {
+  border: none !important;
+}
+
+/* Force no blue outlines or borders anywhere */
+*:focus {
+  outline-color: #06d6a0 !important;
+}
+
+.ant-btn-link {
+  text-decoration: none !important;
+}
+
+.ant-btn-link:hover {
+  text-decoration: none !important;
+}
+
+/* ── Print Styles ── */
+@media print {
+
+  header,
+  footer {
+    display: none;
+  }
+
+  body {
+    background: white;
+    color: black;
+  }
+}
