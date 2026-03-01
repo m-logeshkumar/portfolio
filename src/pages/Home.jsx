@@ -11,10 +11,12 @@ export default function Home() {
   const { isLoggedIn } = useAuthStore();
   const { personalInfo, stats, techStack, projects } = data;
 
-  // Dynamically compute project count for stats
-  const dynamicStats = stats.map(stat =>
-    stat.label === 'Projects' ? { ...stat, value: `${projects.length}+` } : stat
-  );
+  // Dynamically compute project count for stats, and remove "Years Exp" stat
+  const dynamicStats = stats
+    .filter(stat => !stat.label.toLowerCase().includes('exp') && !stat.label.toLowerCase().includes('year'))
+    .map(stat =>
+      stat.label === 'Projects' ? { ...stat, value: `${projects.length}+` } : stat
+    );
 
   const [editingInfo, setEditingInfo] = useState(() => ({ ...personalInfo }));
   const [infoModalOpen, setInfoModalOpen] = useState(false);
@@ -118,9 +120,9 @@ export default function Home() {
         {/* Stats */}
         {dynamicStats.length > 0 && (
           <motion.div variants={itemVariants}>
-            <Row gutter={[20, 20]} className="mb-20">
+            <Row gutter={[20, 20]} justify="center" className="mb-20">
               {dynamicStats.map((stat, index) => (
-                <Col xs={24} sm={8} key={index}>
+                <Col xs={24} sm={12} md={10} key={index}>
                   <motion.div whileHover={{ y: -6, scale: 1.02 }} transition={{ duration: 0.3 }}>
                     <Card hoverable style={{ textAlign: 'center', borderRadius: 20 }} styles={{ body: { padding: '36px 24px' } }}>
                       <Statistic
