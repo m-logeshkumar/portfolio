@@ -51,13 +51,6 @@ npm run build
 npm run preview
 ```
 
-## Login Credentials
-
-- **Username**: `admin`
-- **Password**: `portfolio123`
-
-Click the "Edit Portfolio" button in the header to access edit mode.
-
 ## Project Structure
 
 ```
