@@ -84,17 +84,6 @@ portfolio/
 
 ## Customization
 
-### Edit Content
-
-1. Click "Edit Portfolio" in the header
-2. Login with credentials: `admin` / `portfolio123`
-3. Navigate to any page and edit the content
-4. All changes are automatically saved to localStorage
-
-### Update Default Data
-
-Edit `src/data/portfolio.json` to change the default portfolio content.
-
 ### Styling
 
 - **Colors**: Edit `tailwind.config.js` to change the color scheme
