@@ -206,4 +206,3 @@ Built with ❤️ using React, Vite, Ant Design, and Tailwind CSS
 
 ---
 
-**Login to edit**: `admin` / `portfolio123` 🚀
