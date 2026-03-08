@@ -51,13 +51,6 @@ npm run build
 npm run preview
 ```
 
-## Login Credentials
-
-- **Username**: `admin`
-- **Password**: `portfolio123`
-
-Click the "Edit Portfolio" button in the header to access edit mode.
-
 ## Project Structure
 
 ```
@@ -90,17 +83,6 @@ portfolio/
 ```
 
 ## Customization
-
-### Edit Content
-
-1. Click "Edit Portfolio" in the header
-2. Login with credentials: `admin` / `portfolio123`
-3. Navigate to any page and edit the content
-4. All changes are automatically saved to localStorage
-
-### Update Default Data
-
-Edit `src/data/portfolio.json` to change the default portfolio content.
 
 ### Styling
 
@@ -206,4 +188,3 @@ Built with ❤️ using React, Vite, Ant Design, and Tailwind CSS
 
 ---
 
-**Login to edit**: `admin` / `portfolio123` 🚀
