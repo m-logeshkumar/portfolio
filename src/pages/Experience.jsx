@@ -105,9 +105,19 @@ export default function Experience() {
                         width: 44, height: 44, borderRadius: 12,
                         background: `${color}12`, border: `1px solid ${color}25`,
                         display: 'flex', alignItems: 'center', justifyContent: 'center',
-                        flexShrink: 0, fontSize: 20, fontWeight: '700', color,
+                        flexShrink: 0, overflow: 'hidden',
                       }}>
-                        {exp.company.charAt(0)}
+                        {exp.logo ? (
+                          <img
+                            src={`/api/image-proxy?url=${encodeURIComponent(exp.logo)}`}
+                            alt={exp.company}
+                            style={{ width: '100%', height: '100%', objectFit: 'cover' }}
+                            onError={e => { e.target.onerror = null; e.target.style.display = 'none'; e.target.parentElement.querySelector('.logo-fallback').style.display = 'flex'; }}
+                          />
+                        ) : null}
+                        <span className="logo-fallback" style={{ fontSize: 20, fontWeight: '700', color, display: exp.logo ? 'none' : 'flex', alignItems: 'center', justifyContent: 'center', width: '100%', height: '100%' }}>
+                          {exp.company.charAt(0)}
+                        </span>
                       </div>
                       <div>
                         <h3 style={{ fontSize: 17, fontWeight: '600', color: 'rgba(255,255,255,0.92)', margin: 0 }}>{exp.role}</h3>

@@ -254,6 +254,46 @@ app.post('/leetcode-api/graphql', async (req, res) => {
     }
 });
 
+// ─── Image Proxy ────────────────────────────────────────
+
+app.get('/api/image-proxy', async (req, res) => {
+    let url = req.query.url;
+    if (!url) return res.status(400).json({ error: 'Missing url parameter' });
+    try {
+        // Auto-convert Google Drive sharing links to direct image URLs
+        // Handles: drive.google.com/file/d/ID/view, drive.google.com/open?id=ID, drive.google.com/uc?id=ID
+        let driveId = null;
+        const fileMatch = url.match(/drive\.google\.com\/file\/d\/([^/]+)/);
+        const openMatch = url.match(/drive\.google\.com\/open\?id=([^&]+)/);
+        const ucMatch = url.match(/drive\.google\.com\/uc\?.*id=([^&]+)/);
+        if (fileMatch) driveId = fileMatch[1];
+        else if (openMatch) driveId = openMatch[1];
+        else if (ucMatch) driveId = ucMatch[1];
+        if (driveId) url = `https://lh3.googleusercontent.com/d/${driveId}`;
+
+        const parsed = new URL(url);
+        if (!['http:', 'https:'].includes(parsed.protocol)) {
+            return res.status(400).json({ error: 'Only HTTP/HTTPS URLs allowed' });
+        }
+        if (['localhost', '127.0.0.1', '0.0.0.0', '::1'].includes(parsed.hostname) || parsed.hostname.endsWith('.local')) {
+            return res.status(403).json({ error: 'Internal addresses not allowed' });
+        }
+        const response = await fetch(url);
+        if (!response.ok) throw new Error(`HTTP ${response.status}`);
+        const contentType = response.headers.get('content-type') || '';
+        if (!contentType.startsWith('image/')) {
+            return res.status(403).json({ error: 'URL did not return an image' });
+        }
+        res.set('Content-Type', contentType);
+        res.set('Cache-Control', 'public, max-age=86400');
+        const buffer = Buffer.from(await response.arrayBuffer());
+        res.send(buffer);
+    } catch (error) {
+        console.error('Image proxy error:', error.message);
+        res.status(502).json({ error: 'Failed to fetch image' });
+    }
+});
+
 // ─── Serve Frontend (Production) ────────────────────────
 
 app.use(express.static(path.join(__dirname, 'dist')));
