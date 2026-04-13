@@ -28,10 +28,12 @@ export default function Projects() {
 
   const categories = ['All', 'Featured', 'Full Stack', 'ML', 'Recent'];
 
+  const isRecentProject = (project) => project.highlight === 'Recent';
+
   const filteredProjects = projects.filter(project => {
     if (filter === 'All') return true;
-    if (filter === 'Featured') return project.featured;
-    if (filter === 'Recent') return project.id > Date.now() - 90 * 24 * 60 * 60 * 1000;
+    if (filter === 'Featured') return project.highlight === 'Featured';
+    if (filter === 'Recent') return isRecentProject(project);
     return project.category === filter;
   });
 
@@ -60,7 +62,6 @@ export default function Projects() {
     const projectData = {
       ...values,
       tech: values.tech.split(',').map(t => t.trim()),
-      featured: values.featured === 'true'
     };
 
     if (editModal.project) {
@@ -206,8 +207,11 @@ export default function Projects() {
                         }}>
                           {project.title}
                         </h3>
-                        {project.featured && (
+                        {project.highlight === 'Featured' && (
                           <Tag color="cyan">Featured</Tag>
+                        )}
+                        {project.highlight === 'Recent' && (
+                          <Tag color="geekblue">Recent</Tag>
                         )}
                       </div>
 
@@ -230,7 +234,7 @@ export default function Projects() {
                         WebkitBoxOrient: 'vertical',
                         overflow: 'hidden',
                       }}>
-                        {project.description}
+                        {project.description || project.details}
                       </p>
 
                       <div style={{ display: 'flex', flexWrap: 'wrap', gap: '6px', marginBottom: '16px' }}>
@@ -381,9 +385,11 @@ export default function Projects() {
             <p style={{ color: '#06d6a0', fontWeight: 600, marginBottom: 16 }}>
               {detailsModal.project.impact}
             </p>
-            <p style={{ fontSize: '15px', marginBottom: '16px', color: 'rgba(255, 255, 255, 0.72)', lineHeight: '1.7' }}>
-              {detailsModal.project.description}
-            </p>
+            {detailsModal.project.description && (
+              <p style={{ fontSize: '15px', marginBottom: '16px', color: 'rgba(255, 255, 255, 0.72)', lineHeight: '1.7' }}>
+                {detailsModal.project.description}
+              </p>
+            )}
             <p style={{ fontSize: '16px', marginBottom: '20px', color: 'rgba(255, 255, 255, 0.7)', lineHeight: '1.7' }}>
               {detailsModal.project.details}
             </p>
@@ -426,26 +432,29 @@ export default function Projects() {
             <Input />
           </Form.Item>
 
-          <Form.Item name="description" label="Description" rules={[{ required: true }]}>
-            <TextArea rows={3} />
+          <Form.Item name="impact" label="Impact Metric" rules={[{ required: true }]}>
+            <Input placeholder="e.g., Reduced load time by 80%" />
           </Form.Item>
 
           <Form.Item name="details" label="Detailed Description" rules={[{ required: true }]}>
             <TextArea rows={4} />
           </Form.Item>
 
-          <Form.Item name="impact" label="Impact Metric" rules={[{ required: true }]}>
-            <Input placeholder="e.g., Reduced load time by 80%" />
-          </Form.Item>
-
           <Form.Item name="tech" label="Technologies (comma-separated)" rules={[{ required: true }]}>
             <Input placeholder="React, Node.js, MongoDB" />
           </Form.Item>
 
-          <Form.Item name="category" label="Category" rules={[{ required: true }]}>
-            <Select>
+          <Form.Item name="category" label="Category" rules={[{ required: true, message: 'Please select a category' }]}>
+            <Select placeholder="Select category">
               <Select.Option value="Full Stack">Full Stack</Select.Option>
               <Select.Option value="ML">ML</Select.Option>
+            </Select>
+          </Form.Item>
+
+          <Form.Item name="highlight" label="Highlight (Optional)">
+            <Select allowClear placeholder="Select highlight type">
+              <Select.Option value="Featured">Featured</Select.Option>
+              <Select.Option value="Recent">Recent</Select.Option>
             </Select>
           </Form.Item>
 
@@ -459,13 +468,6 @@ export default function Projects() {
 
           <Form.Item name="demo" label="Demo URL">
             <Input />
-          </Form.Item>
-
-          <Form.Item name="featured" label="Featured" rules={[{ required: true }]}>
-            <Select>
-              <Select.Option value="true">Yes</Select.Option>
-              <Select.Option value="false">No</Select.Option>
-            </Select>
           </Form.Item>
 
           <Form.Item>

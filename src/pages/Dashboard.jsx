@@ -20,7 +20,7 @@ export default function Dashboard() {
 
   const stats = [
     { title: 'Projects', value: data.projects.length, color: '#06d6a0' },
-    { title: 'Featured', value: data.projects.filter(p => p.featured).length, color: '#4cc9f0' },
+    { title: 'Featured', value: data.projects.filter(p => p.highlight === 'Featured').length, color: '#4cc9f0' },
     { title: 'Skills', value: data.skills.reduce((a, c) => a + c.items.length, 0), color: '#7b5ea7' },
     { title: 'Experience', value: data.experience.length, color: '#f72585' },
     { title: 'Certificates', value: (data.certificates || []).length, color: '#ffd60a' },

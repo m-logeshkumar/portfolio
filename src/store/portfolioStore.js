@@ -2,6 +2,43 @@ import { create } from 'zustand';
 
 const STORAGE_KEY = 'portfolio_data';
 
+const normalizeProject = (project = {}) => {
+  const techList = Array.isArray(project.tech)
+    ? project.tech
+    : typeof project.tech === 'string'
+      ? project.tech.split(',').map((t) => t.trim())
+      : [];
+
+  const isOldFeatured = project.featured === true || project.featured === 'true';
+  const highlight = ['Featured', 'Recent'].includes(project.highlight)
+    ? project.highlight
+    : isOldFeatured
+      ? 'Featured'
+    : undefined;
+
+  return {
+    id: project.id ?? Date.now(),
+    title: project.title || '',
+    impact: project.impact || '',
+    details: project.details || project.description || '',
+    description: project.description || '',
+    tech: techList.filter(Boolean),
+    category: project.category || '',
+    github: project.github || '',
+    image: project.image || '',
+    demo: project.demo || '',
+    highlight,
+  };
+};
+
+const normalizeData = (data = {}) => {
+  const merged = { ...emptyData, ...data };
+  return {
+    ...merged,
+    projects: Array.isArray(merged.projects) ? merged.projects.map(normalizeProject) : [],
+  };
+};
+
 // Empty default structure (MongoDB is the source of truth)
 const emptyData = {
   personalInfo: { name: '', title: '', location: '', email: '', phone: '', linkedin: '', github: '', resumeUrl: '' },
@@ -18,7 +55,7 @@ const emptyData = {
 const loadCachedData = () => {
   try {
     const stored = localStorage.getItem(STORAGE_KEY);
-    return stored ? JSON.parse(stored) : emptyData;
+    return stored ? normalizeData(JSON.parse(stored)) : emptyData;
   } catch (error) {
     console.error('Error loading cached data:', error);
     return emptyData;
@@ -27,8 +64,9 @@ const loadCachedData = () => {
 
 // Save data to localStorage (cache) and MongoDB (permanent)
 const saveData = async (data) => {
+  const normalizedData = normalizeData(data);
   try {
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(normalizedData));
   } catch (error) {
     console.error('Error caching data:', error);
   }
@@ -37,7 +75,7 @@ const saveData = async (data) => {
     await fetch('/api/portfolio', {
       method: 'PUT',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(data),
+      body: JSON.stringify(normalizedData),
     });
   } catch (error) {
     console.error('Error saving to MongoDB:', error);
@@ -58,9 +96,17 @@ export const usePortfolioStore = create((set, get) => ({
     try {
       const res = await fetch('/api/portfolio');
       if (res.ok) {
-        const data = await res.json();
+        const rawData = await res.json();
+        const data = normalizeData(rawData);
+        const hasSchemaChanges = JSON.stringify(rawData) !== JSON.stringify(data);
+
         localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
         set({ data });
+
+        if (hasSchemaChanges) {
+          saveData(data);
+        }
+
         console.log('✅ Portfolio data loaded from MongoDB');
       }
     } catch (error) {
@@ -76,13 +122,13 @@ export const usePortfolioStore = create((set, get) => ({
   }),
 
   updateProjects: (projects) => set((state) => {
-    const newData = { ...state.data, projects };
+    const newData = { ...state.data, projects: (projects || []).map(normalizeProject) };
     saveData(newData);
     return { data: newData };
   }),
 
   addProject: (project) => set((state) => {
-    const newProjects = [...state.data.projects, { ...project, id: Date.now() }];
+    const newProjects = [...state.data.projects, normalizeProject({ ...project, id: Date.now() })];
     const newData = { ...state.data, projects: newProjects };
     saveData(newData);
     return { data: newData };
@@ -90,7 +136,7 @@ export const usePortfolioStore = create((set, get) => ({
 
   updateProject: (id, updates) => set((state) => {
     const newProjects = state.data.projects.map(p =>
-      p.id === id ? { ...p, ...updates } : p
+      p.id === id ? normalizeProject({ ...p, ...updates, id: p.id }) : p
     );
     const newData = { ...state.data, projects: newProjects };
     saveData(newData);
