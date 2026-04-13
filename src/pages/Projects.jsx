@@ -4,6 +4,8 @@ import { Card, Button, Tag, Modal, Tabs, Input, Form, Space, message, Select } f
 import {
   GithubOutlined,
   LinkOutlined,
+  PictureOutlined,
+  CloseOutlined,
   PlusOutlined,
   EditOutlined,
   DeleteOutlined,
@@ -21,6 +23,7 @@ export default function Projects() {
   const [filter, setFilter] = useState('All');
   const [detailsModal, setDetailsModal] = useState({ open: false, project: null });
   const [editModal, setEditModal] = useState({ open: false, project: null });
+  const [closeHovered, setCloseHovered] = useState(false);
   const [form] = Form.useForm();
 
   const categories = ['All', 'Featured', 'Full Stack', 'ML', 'Recent'];
@@ -75,6 +78,12 @@ export default function Projects() {
   const openAddModal = () => {
     form.resetFields();
     setEditModal({ open: true, project: null });
+  };
+
+  const getProjectImage = (url) => {
+    if (!url) return '';
+    if (url.startsWith('data:') || url.startsWith('/')) return url;
+    return `/api/image-proxy?url=${encodeURIComponent(url)}`;
   };
 
   return (
@@ -147,7 +156,9 @@ export default function Projects() {
                 >
                   <Card
                     hoverable
+                    onClick={() => setDetailsModal({ open: true, project })}
                     style={{
+                      cursor: 'pointer',
                       borderRadius: '16px',
                       height: '100%',
                       display: 'flex',
@@ -155,6 +166,31 @@ export default function Projects() {
                     }}
                     bodyStyle={{ flex: 1, display: 'flex', flexDirection: 'column', padding: '20px' }}
                   >
+                    <div style={{
+                      height: '160px',
+                      borderRadius: '12px',
+                      overflow: 'hidden',
+                      marginBottom: '16px',
+                      border: '1px solid rgba(255, 255, 255, 0.06)',
+                      background: 'linear-gradient(135deg, rgba(6, 214, 160, 0.12), rgba(76, 201, 240, 0.12))',
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                    }}>
+                      {project.image ? (
+                        <img
+                          src={getProjectImage(project.image)}
+                          alt={project.title}
+                          style={{ width: '100%', height: '100%', objectFit: 'cover' }}
+                          onError={(e) => {
+                            e.currentTarget.style.display = 'none';
+                          }}
+                        />
+                      ) : (
+                        <PictureOutlined style={{ fontSize: '32px', color: 'rgba(255, 255, 255, 0.35)' }} />
+                      )}
+                    </div>
+
                     <div style={{ flex: 1 }}>
                       <div style={{
                         display: 'flex',
@@ -207,11 +243,12 @@ export default function Projects() {
                       </div>
                     </div>
 
-                    <div style={{ display: 'flex', gap: '8px', marginTop: 'auto' }}>
+                    <div style={{ display: 'flex', gap: '8px', marginTop: 'auto', flexWrap: 'wrap' }}>
                       <Button
                         icon={<GithubOutlined />}
                         href={project.github}
                         target="_blank"
+                        onClick={(e) => e.stopPropagation()}
                         style={{ flex: 1 }}
                         size="small"
                       >
@@ -223,6 +260,7 @@ export default function Projects() {
                           type="primary"
                           href={project.demo}
                           target="_blank"
+                          onClick={(e) => e.stopPropagation()}
                           style={{ flex: 1 }}
                           size="small"
                         >
@@ -235,7 +273,10 @@ export default function Projects() {
                       <div style={{ display: 'flex', gap: '8px', marginTop: '8px' }}>
                         <Button
                           icon={<EditOutlined />}
-                          onClick={() => handleEdit(project)}
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            handleEdit(project);
+                          }}
                           style={{ flex: 1 }}
                           size="small"
                         >
@@ -244,7 +285,10 @@ export default function Projects() {
                         <Button
                           icon={<DeleteOutlined />}
                           danger
-                          onClick={() => handleDelete(project.id)}
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            handleDelete(project.id);
+                          }}
                           style={{ flex: 1 }}
                           size="small"
                         >
@@ -270,20 +314,76 @@ export default function Projects() {
 
       {/* Case Study Modal */}
       <Modal
-        title={detailsModal.project?.title}
+        title={null}
         open={detailsModal.open}
         onCancel={() => setDetailsModal({ open: false, project: null })}
         footer={null}
-        width={700}
+        width={920}
+        centered
+        closeIcon={
+          <span
+            onMouseEnter={() => setCloseHovered(true)}
+            onMouseLeave={() => setCloseHovered(false)}
+            style={{
+              color: closeHovered ? '#ff4d4f' : 'rgba(255,255,255,0.55)',
+              fontSize: 20,
+              transition: 'color 0.2s ease',
+            }}
+          >
+            <CloseOutlined />
+          </span>
+        }
+        styles={{
+          mask: {
+            background: 'rgba(7, 10, 16, 0.72)',
+            backdropFilter: 'blur(9px)',
+            WebkitBackdropFilter: 'blur(9px)',
+          },
+          content: {
+            background: 'linear-gradient(180deg, rgba(14, 18, 27, 0.94), rgba(11, 15, 23, 0.98))',
+            border: '1px solid rgba(255,255,255,0.08)',
+            borderRadius: 16,
+          },
+          body: {
+            padding: 24,
+          },
+        }}
       >
         {detailsModal.project && (
           <div>
             <div style={{
-              height: '80px',
-              background: `linear-gradient(135deg, rgba(6, 214, 160, 0.15), rgba(76, 201, 240, 0.15))`,
+              height: '320px',
+              background: `linear-gradient(135deg, rgba(6, 214, 160, 0.12), rgba(76, 201, 240, 0.12))`,
               borderRadius: '12px',
               marginBottom: '20px',
-            }} />
+              border: '1px solid rgba(255,255,255,0.08)',
+              overflow: 'hidden',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+            }}>
+              {detailsModal.project.image ? (
+                <img
+                  src={getProjectImage(detailsModal.project.image)}
+                  alt={detailsModal.project.title}
+                  style={{ width: '100%', height: '100%', objectFit: 'cover' }}
+                  onError={(e) => {
+                    e.currentTarget.style.display = 'none';
+                  }}
+                />
+              ) : (
+                <PictureOutlined style={{ fontSize: 48, color: 'rgba(255,255,255,0.45)' }} />
+              )}
+            </div>
+            <h2 style={{ color: 'rgba(255,255,255,0.95)', fontSize: 28, marginBottom: 8 }}>
+              {detailsModal.project.title}
+            </h2>
+            <p style={{ color: '#06d6a0', fontWeight: 600, marginBottom: 16 }}>
+              {detailsModal.project.impact}
+            </p>
+            <p style={{ fontSize: '15px', marginBottom: '16px', color: 'rgba(255, 255, 255, 0.72)', lineHeight: '1.7' }}>
+              {detailsModal.project.description}
+            </p>
             <p style={{ fontSize: '16px', marginBottom: '20px', color: 'rgba(255, 255, 255, 0.7)', lineHeight: '1.7' }}>
               {detailsModal.project.details}
             </p>
@@ -299,9 +399,11 @@ export default function Projects() {
               <Button icon={<GithubOutlined />} href={detailsModal.project.github} target="_blank">
                 View Code
               </Button>
-              <Button icon={<LinkOutlined />} type="primary" href={detailsModal.project.demo} target="_blank">
-                Live Demo
-              </Button>
+              {detailsModal.project.demo && (
+                <Button icon={<LinkOutlined />} type="primary" href={detailsModal.project.demo} target="_blank">
+                  Live Demo
+                </Button>
+              )}
             </Space>
           </div>
         )}
@@ -349,6 +451,10 @@ export default function Projects() {
 
           <Form.Item name="github" label="GitHub URL" rules={[{ required: true, type: 'url' }]}>
             <Input />
+          </Form.Item>
+
+          <Form.Item name="image" label="Project Image URL" rules={[{ type: 'url', message: 'Enter a valid image URL' }]}>
+            <Input placeholder="https://..." />
           </Form.Item>
 
           <Form.Item name="demo" label="Demo URL">
