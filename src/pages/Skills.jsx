@@ -66,7 +66,7 @@ export default function Skills() {
   const displaySkills = isLoggedIn ? editingSkills : skills;
 
   return (
-    <div className="min-h-screen relative" style={{ background: '#0a0a0f' }}>
+    <div className="min-h-screen relative" style={{ background: '#0a0a0f', overflow: 'hidden' }}>
       <div className="orb orb-1" />
 
       <div className="max-w-7xl mx-auto px-4 py-16 sm:px-6 lg:px-8 relative z-10">
