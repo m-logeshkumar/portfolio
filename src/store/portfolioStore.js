@@ -31,11 +31,32 @@ const normalizeProject = (project = {}) => {
   };
 };
 
+const normalizeCertificate = (cert = {}) => {
+  const skills = Array.isArray(cert.skills)
+    ? cert.skills
+    : typeof cert.skills === 'string'
+      ? cert.skills.split(',').map((s) => s.trim()).filter(Boolean)
+      : [];
+
+  return {
+    id: cert.id ?? Date.now(),
+    title: cert.title || '',
+    issuer: cert.issuer || '',
+    date: cert.date || '',
+    credentialId: cert.credentialId || '',
+    url: cert.url || '',
+    description: cert.description || '',
+    image: cert.image || '',
+    skills,
+  };
+};
+
 const normalizeData = (data = {}) => {
   const merged = { ...emptyData, ...data };
   return {
     ...merged,
     projects: Array.isArray(merged.projects) ? merged.projects.map(normalizeProject) : [],
+    certificates: Array.isArray(merged.certificates) ? merged.certificates.map(normalizeCertificate) : [],
   };
 };
 
@@ -184,13 +205,13 @@ export const usePortfolioStore = create((set, get) => ({
 
   // Certificate actions
   updateCertificates: (certificates) => set((state) => {
-    const newData = { ...state.data, certificates };
+    const newData = { ...state.data, certificates: (certificates || []).map(normalizeCertificate) };
     saveData(newData);
     return { data: newData };
   }),
 
   addCertificate: (cert) => set((state) => {
-    const newCertificates = [...(state.data.certificates || []), { ...cert, id: Date.now() }];
+    const newCertificates = [...(state.data.certificates || []), normalizeCertificate({ ...cert, id: cert.id ?? Date.now() })];
     const newData = { ...state.data, certificates: newCertificates };
     saveData(newData);
     return { data: newData };
@@ -198,7 +219,7 @@ export const usePortfolioStore = create((set, get) => ({
 
   updateCertificate: (id, updates) => set((state) => {
     const newCertificates = (state.data.certificates || []).map(c =>
-      c.id === id ? { ...c, ...updates } : c
+      c.id === id ? normalizeCertificate({ ...c, ...updates, id: c.id }) : c
     );
     const newData = { ...state.data, certificates: newCertificates };
     saveData(newData);

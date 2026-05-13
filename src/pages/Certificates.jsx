@@ -7,29 +7,27 @@ import { useState, useEffect } from 'react';
 
 const accentColors = ['#06d6a0', '#4cc9f0', '#7b5ea7', '#f72585', '#ffd60a', '#ff6b6b'];
 
+const getCertificateImage = (url) => {
+  if (!url) return '';
+  if (url.startsWith('data:') || url.startsWith('/')) return url;
+  return `/api/image-proxy?url=${encodeURIComponent(url)}`;
+};
+
+const getCertificatePreviewImage = (cert, uploadedImage = '') => {
+  if (uploadedImage) return uploadedImage;
+  return getCertificateImage(cert?.image || cert?.url || '');
+};
+
 export default function Certificates() {
   const { data, addCertificate, updateCertificate, deleteCertificate } = usePortfolioStore();
   const { isLoggedIn } = useAuthStore();
   const certificates = data.certificates || [];
+  const [detailsModal, setDetailsModal] = useState({ open: false, certificate: null });
   const [editModal, setEditModal] = useState({ open: false, certificate: null });
   const [form] = Form.useForm();
   const [uploadingImage, setUploadingImage] = useState(false);
   const [certImages, setCertImages] = useState({});
-
-  // Check which certificates have images
-  useEffect(() => {
-    certificates.forEach(cert => {
-      if (!certImages[cert.id]) {
-        fetch(`/api/certificate-image/${cert.id}`)
-          .then(res => {
-            if (res.ok) {
-              setCertImages(prev => ({ ...prev, [cert.id]: `/api/certificate-image/${cert.id}?t=${Date.now()}` }));
-            }
-          })
-          .catch(() => {});
-      }
-    });
-  }, [certificates]);
+  const [closeHovered, setCloseHovered] = useState(false);
 
   const handleImageUpload = async (file, certId) => {
     if (!['image/jpeg', 'image/png', 'image/webp'].includes(file.type)) {
@@ -81,15 +79,11 @@ export default function Certificates() {
   };
 
   const handleSubmit = (values) => {
-    const certData = {
-      ...values,
-      skills: values.skills ? values.skills.split(',').map(s => s.trim()).filter(Boolean) : [],
-    };
     if (editModal.certificate) {
-      updateCertificate(editModal.certificate.id, certData);
+      updateCertificate(editModal.certificate.id, values);
       message.success('Certificate updated!');
     } else {
-      addCertificate(certData);
+      addCertificate(values);
       message.success('Certificate added!');
     }
     setEditModal({ open: false, certificate: null });
@@ -146,16 +140,20 @@ export default function Certificates() {
                     <motion.div whileHover={{ y: -6, scale: 1.02 }} transition={{ duration: 0.3 }}>
                       <Card
                         hoverable
-                        style={{ borderRadius: 20, overflow: 'hidden', border: `1px solid ${color}18`, height: '100%' }}
+                        onClick={() => setDetailsModal({ open: true, certificate: cert })}
+                        style={{ borderRadius: 20, overflow: 'hidden', border: `1px solid ${color}18`, height: '100%', cursor: 'pointer' }}
                         styles={{ body: { padding: 0, display: 'flex', flexDirection: 'column', height: '100%' } }}
                       >
                         {/* Certificate Image */}
-                        {certImages[cert.id] ? (
+                        {getCertificatePreviewImage(cert, certImages[cert.id]) ? (
                           <div style={{ position: 'relative', width: '100%', height: 180, overflow: 'hidden' }}>
                             <img
-                              src={certImages[cert.id]}
+                              src={getCertificatePreviewImage(cert, certImages[cert.id])}
                               alt={cert.title}
                               style={{ width: '100%', height: '100%', objectFit: 'cover' }}
+                              onError={(e) => {
+                                e.currentTarget.style.display = 'none';
+                              }}
                             />
                             <div style={{
                               position: 'absolute', inset: 0,
@@ -237,8 +235,14 @@ export default function Certificates() {
                           )}
                           {isLoggedIn && (
                             <div style={{ display: 'flex', gap: 6, marginLeft: 'auto' }}>
-                              <Button icon={<EditOutlined />} size="small" onClick={() => handleEdit(cert)} />
-                              <Button icon={<DeleteOutlined />} size="small" danger onClick={() => handleDelete(cert.id)} />
+                              <Button icon={<EditOutlined />} size="small" onClick={(e) => {
+                                e.stopPropagation();
+                                handleEdit(cert);
+                              }} />
+                              <Button icon={<DeleteOutlined />} size="small" danger onClick={(e) => {
+                                e.stopPropagation();
+                                handleDelete(cert.id);
+                              }} />
                             </div>
                           )}
                         </div>
@@ -253,6 +257,127 @@ export default function Certificates() {
         </motion.div>
       </div>
 
+      {/* Certificate Details Modal */}
+      <Modal
+        title={null}
+        open={detailsModal.open}
+        onCancel={() => setDetailsModal({ open: false, certificate: null })}
+        footer={null}
+        width={800}
+        centered
+        closeIcon={
+          <span
+            onMouseEnter={() => setCloseHovered(true)}
+            onMouseLeave={() => setCloseHovered(false)}
+            style={{
+              color: closeHovered ? '#ff4d4f' : 'rgba(255,255,255,0.55)',
+              fontSize: 20,
+              transition: 'color 0.2s ease',
+            }}
+          >
+            ✕
+          </span>
+        }
+        styles={{
+          mask: {
+            background: 'rgba(7, 10, 16, 0.72)',
+            backdropFilter: 'blur(9px)',
+            WebkitBackdropFilter: 'blur(9px)',
+          },
+          content: {
+            background: 'linear-gradient(180deg, rgba(14, 18, 27, 0.94), rgba(11, 15, 23, 0.98))',
+            border: '1px solid rgba(255,255,255,0.08)',
+            borderRadius: 16,
+          },
+          body: {
+            padding: 24,
+          },
+        }}
+      >
+        {detailsModal.certificate && (
+          <div>
+            <div style={{
+              height: '320px',
+              background: `linear-gradient(135deg, rgba(6, 214, 160, 0.12), rgba(76, 201, 240, 0.12))`,
+              borderRadius: '12px',
+              marginBottom: '20px',
+              border: '1px solid rgba(255,255,255,0.08)',
+              overflow: 'hidden',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+            }}>
+              {getCertificatePreviewImage(detailsModal.certificate, certImages[detailsModal.certificate.id]) ? (
+                <img
+                  src={getCertificatePreviewImage(detailsModal.certificate, certImages[detailsModal.certificate.id])}
+                  alt={detailsModal.certificate.title}
+                  style={{ width: '100%', height: '100%', objectFit: 'cover' }}
+                  onError={(e) => {
+                    e.currentTarget.style.display = 'none';
+                  }}
+                />
+              ) : (
+                <SafetyCertificateOutlined style={{ fontSize: 48, color: 'rgba(255,255,255,0.45)' }} />
+              )}
+            </div>
+            <h2 style={{ color: 'rgba(255,255,255,0.95)', fontSize: 28, marginBottom: 8 }}>
+              {detailsModal.certificate.title}
+            </h2>
+            <p style={{ color: '#06d6a0', fontWeight: 600, marginBottom: 16 }}>
+              {detailsModal.certificate.issuer}
+            </p>
+            {detailsModal.certificate.date && (
+              <p style={{ fontSize: '14px', color: 'rgba(255,255,255,0.5)', marginBottom: 12 }}>
+                Earned: {detailsModal.certificate.date}
+              </p>
+            )}
+            {detailsModal.certificate.description && (
+              <p style={{ fontSize: '15px', marginBottom: '16px', color: 'rgba(255, 255, 255, 0.72)', lineHeight: '1.7' }}>
+                {detailsModal.certificate.description}
+              </p>
+            )}
+            {detailsModal.certificate.credentialId && (
+              <p style={{ fontSize: '13px', marginBottom: '16px', color: 'rgba(255,255,255,0.4)', background: 'rgba(255,255,255,0.03)', padding: '10px 12px', borderRadius: 8 }}>
+                Credential ID: <strong>{detailsModal.certificate.credentialId}</strong>
+              </p>
+            )}
+            {detailsModal.certificate.skills && detailsModal.certificate.skills.length > 0 && (
+              <div style={{ marginBottom: '20px' }}>
+                <strong style={{ color: 'rgba(255, 255, 255, 0.7)' }}>Skills:</strong>
+                <div style={{ display: 'flex', flexWrap: 'wrap', gap: '6px', marginTop: '8px' }}>
+                  {detailsModal.certificate.skills.map((skill, i) => (
+                    <Tag key={i} color="cyan">{skill}</Tag>
+                  ))}
+                </div>
+              </div>
+            )}
+            <div style={{ display: 'flex', gap: '8px', marginTop: '20px' }}>
+              {detailsModal.certificate.url && (
+                <Button icon={<LinkOutlined />} type="primary" href={detailsModal.certificate.url} target="_blank">
+                  View Certificate
+                </Button>
+              )}
+              {isLoggedIn && (
+                <>
+                  <Button icon={<EditOutlined />} onClick={() => {
+                    setDetailsModal({ open: false, certificate: null });
+                    handleEdit(detailsModal.certificate);
+                  }}>
+                    Edit
+                  </Button>
+                  <Button icon={<DeleteOutlined />} danger onClick={() => {
+                    setDetailsModal({ open: false, certificate: null });
+                    handleDelete(detailsModal.certificate.id);
+                  }}>
+                    Delete
+                  </Button>
+                </>
+              )}
+            </div>
+          </div>
+        )}
+      </Modal>
+
       {/* Add/Edit Modal */}
       <Modal
         title={editModal.certificate ? 'Edit Certificate' : 'Add Certificate'}
@@ -263,6 +388,10 @@ export default function Certificates() {
       >
         <Form form={form} onFinish={handleSubmit} layout="vertical"
           initialValues={editModal.certificate || {}}>
+          {/* Hidden ID field to preserve certificate ID on edit */}
+          <Form.Item name="id" style={{ display: 'none' }}>
+            <Input type="hidden" />
+          </Form.Item>
           <Form.Item name="title" label="Certificate Title" rules={[{ required: true, message: 'Please enter the certificate title' }]}>
             <Input placeholder="e.g. AWS Solutions Architect Associate" />
           </Form.Item>
@@ -281,10 +410,13 @@ export default function Certificates() {
           <Form.Item name="description" label="Description">
             <Input.TextArea rows={3} placeholder="Brief description of the certificate..." />
           </Form.Item>
+          <Form.Item name="image" label="Certificate Image URL (Google Drive or External)">
+            <Input placeholder="https://... or Google Drive link" />
+          </Form.Item>
 
           {/* Image Upload — shown after certificate is created */}
           {editModal.certificate && (
-            <Form.Item label="Certificate Image">
+            <Form.Item label="Uploaded Certificate Image">
               <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
                 {certImages[editModal.certificate.id] ? (
                   <div style={{ display: 'flex', alignItems: 'center', gap: 12, flex: 1 }}>
