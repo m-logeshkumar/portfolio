@@ -4,15 +4,16 @@ import multer from 'multer';
 import cors from 'cors';
 import path from 'path';
 import { fileURLToPath } from 'url';
+import 'dotenv/config';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
 const app = express();
-const PORT = process.env.PORT || 5000;
+const PORT = process.env.PORT;
 
 // MongoDB Atlas connection
-const MONGO_URI = process.env.MONGO_URI || 'mongodb+srv://logeshkumar:logesh@mycluster.uvpms2r.mongodb.net/Portfolio?retryWrites=true&w=majority&appName=MyCluster';
+const MONGO_URI = process.env.MONGO_URI ;
 
 mongoose.connect(MONGO_URI)
     .then(() => console.log('✅ Connected to MongoDB Atlas'))

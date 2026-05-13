@@ -18,6 +18,8 @@
     "autoprefixer": "^10.4.16",
     "concurrently": "^9.2.1",
     "cors": "^2.8.6",
+    "devicon": "^2.17.0",
+    "dotenv": "^17.4.2",
     "express": "^5.2.1",
     "framer-motion": "^10.16.16",
     "lucide-react": "^0.294.0",
