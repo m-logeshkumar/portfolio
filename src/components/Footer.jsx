@@ -228,7 +228,7 @@ export default function Footer() {
             alignItems: 'center',
             gap: 5,
           }}>
-            © {new Date().getFullYear()} {personalInfo.name}
+            © {new Date().getFullYear()} {personalInfo.name}. All Rights Reserved.
           </p>
         </div>
       </div>

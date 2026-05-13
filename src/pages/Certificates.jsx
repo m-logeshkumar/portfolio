@@ -380,37 +380,51 @@ export default function Certificates() {
 
       {/* Add/Edit Modal */}
       <Modal
-        title={editModal.certificate ? 'Edit Certificate' : 'Add Certificate'}
+        title={editModal.certificate ? 'Edit Certificate' : 'Add New Certificate'}
         open={editModal.open}
         onCancel={() => { setEditModal({ open: false, certificate: null }); form.resetFields(); }}
         footer={null}
-        width={600}
+        width={700}
       >
-        <Form form={form} onFinish={handleSubmit} layout="vertical"
-          initialValues={editModal.certificate || {}}>
+        <Form
+          form={form}
+          onFinish={handleSubmit}
+          layout="vertical"
+        >
           {/* Hidden ID field to preserve certificate ID on edit */}
           <Form.Item name="id" style={{ display: 'none' }}>
             <Input type="hidden" />
           </Form.Item>
-          <Form.Item name="title" label="Certificate Title" rules={[{ required: true, message: 'Please enter the certificate title' }]}>
+
+          <Form.Item name="title" label="Title" rules={[{ required: true, message: 'Please enter the certificate title' }]}>
             <Input placeholder="e.g. AWS Solutions Architect Associate" />
+
           </Form.Item>
           <Form.Item name="issuer" label="Issuing Organization" rules={[{ required: true, message: 'Please enter the issuer' }]}>
             <Input placeholder="e.g. Amazon Web Services" />
           </Form.Item>
+
+          <Form.Item name="description" label="Description" rules={[{ required: true }]}>
+            <Input.TextArea rows={4} placeholder="Brief description of the certificate..." />
+          </Form.Item>
+
+          <Form.Item name="skills" label="Related Skills (comma-separated)">
+            <Input placeholder="e.g. AWS, Cloud Computing, DevOps" />
+          </Form.Item>
+
           <Form.Item name="date" label="Date Earned">
             <Input placeholder="e.g. Jan 2025" />
+
           </Form.Item>
           <Form.Item name="credentialId" label="Credential ID">
             <Input placeholder="e.g. ABC123XYZ" />
           </Form.Item>
-          <Form.Item name="url" label="Certificate URL">
+
+          <Form.Item name="url" label="Certificate URL" rules={[{ type: 'url', message: 'Enter a valid URL' }]}>
             <Input prefix={<LinkOutlined />} placeholder="https://..." />
           </Form.Item>
-          <Form.Item name="description" label="Description">
-            <Input.TextArea rows={3} placeholder="Brief description of the certificate..." />
-          </Form.Item>
-          <Form.Item name="image" label="Certificate Image URL (Google Drive or External)">
+
+          <Form.Item name="image" label="Certificate Image URL (Google Drive or External)" rules={[{ type: 'url', message: 'Enter a valid image URL' }]}>
             <Input placeholder="https://... or Google Drive link" />
           </Form.Item>
 
@@ -447,9 +461,7 @@ export default function Certificates() {
               </p>
             </Form.Item>
           )}
-          <Form.Item name="skills" label="Related Skills (comma-separated)">
-            <Input placeholder="e.g. AWS, Cloud Computing, DevOps" />
-          </Form.Item>
+
           <Form.Item>
             <Button type="primary" htmlType="submit" block size="large">
               {editModal.certificate ? 'Update Certificate' : 'Add Certificate'}

@@ -365,9 +365,6 @@ const skillDeviconMeta = {
                               </div>
                               <div style={{ display: 'flex', flexDirection: 'column', minWidth: 0, flex: 1 }}>
                                 <span style={{ whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{skill.name}</span>
-                                <span style={{ fontSize: '12px', color: 'rgba(255,255,255,0.42)', marginTop: '2px' }}>
-                                  Technology
-                                </span>
                               </div>
 
                               {isLoggedIn && (
