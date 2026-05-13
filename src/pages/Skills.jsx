@@ -212,7 +212,7 @@ const skillDeviconMeta = {
                 items:
                   editingSkillIndex !== null
                     ? cat.items.map((item, i) => (i === editingSkillIndex ? values : item))
-                    : [...cat.items, values],
+                    : [values, ...cat.items],
               }
             : cat
         )

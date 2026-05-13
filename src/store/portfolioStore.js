@@ -149,7 +149,7 @@ export const usePortfolioStore = create((set, get) => ({
   }),
 
   addProject: (project) => set((state) => {
-    const newProjects = [...state.data.projects, normalizeProject({ ...project, id: Date.now() })];
+    const newProjects = [normalizeProject({ ...project, id: Date.now() }), ...state.data.projects];
     const newData = { ...state.data, projects: newProjects };
     saveData(newData);
     return { data: newData };
@@ -211,7 +211,7 @@ export const usePortfolioStore = create((set, get) => ({
   }),
 
   addCertificate: (cert) => set((state) => {
-    const newCertificates = [...(state.data.certificates || []), normalizeCertificate({ ...cert, id: cert.id ?? Date.now() })];
+    const newCertificates = [normalizeCertificate({ ...cert, id: cert.id ?? Date.now() }), ...(state.data.certificates || [])];
     const newData = { ...state.data, certificates: newCertificates };
     saveData(newData);
     return { data: newData };
