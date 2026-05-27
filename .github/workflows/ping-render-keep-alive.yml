@@ -1,0 +1,13 @@
+name: Ping Render Keep-Alive
+
+on:
+  schedule:
+    - cron: '*/14 * * * *'
+
+jobs:
+  ping-server:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Warm the app with a real GET request
+        run: |
+          curl -fsSL -o /dev/null -w "%{http_code}" https://portfolio-bnw5.onrender.com/
