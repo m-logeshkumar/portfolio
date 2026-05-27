@@ -1,0 +1,14 @@
+name: Ping Render Keep-Alive
+
+on:
+  schedule:
+    - cron: '*/10 * * * *' # Pings every 10 minutes
+  workflow_dispatch:
+
+jobs:
+  ping-server:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Send HTTP request to Render
+        run: |
+          curl -I https://portfolio-bnw5.onrender.com
