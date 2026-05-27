@@ -23,6 +23,19 @@ mongoose.connect(MONGO_URI)
 app.use(cors());
 app.use(express.json({ limit: '16mb' }));
 
+// Health check for uptime pings and Render keep-alive
+app.get('/health', (req, res) => {
+    res.setHeader('Content-Type', 'text/plain');
+    res.setHeader('Connection', 'close');
+    res.status(200).send('OK');
+});
+
+app.head('/health', (req, res) => {
+    res.setHeader('Content-Type', 'text/plain');
+    res.setHeader('Connection', 'close');
+    res.sendStatus(200);
+});
+
 // ─── Schemas ────────────────────────────────────────────
 
 const resumeSchema = new mongoose.Schema({

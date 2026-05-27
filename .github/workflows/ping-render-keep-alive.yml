@@ -1,0 +1,14 @@
+name: Ping Render Keep-Alive
+
+on:
+  schedule:
+    - cron: '*/14 * * * *'
+  workflow_dispatch:
+
+jobs:
+  ping-server:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Send minimal HEAD request
+        run: |
+          curl -I -s -o /dev/null -w "%{http_code}" https://portfolio-bnw5.onrender.com/health
