@@ -9,6 +9,17 @@ jobs:
   ping-server:
     runs-on: ubuntu-latest
     steps:
-      - name: Send minimal HEAD request
+      - name: Send cheap HEAD ping (very low bandwidth)
         run: |
           curl -I -s -o /dev/null -w "%{http_code}" https://portfolio-bnw5.onrender.com/health
+
+      - name: Occasionally follow redirects to warm frontend (low-frequency)
+        env:
+          GITHUB_RUN_NUMBER: ${{ github.run_number }}
+        run: |
+          # Perform a full GET that follows redirects only once every 6 runs (~84 minutes)
+          if [ $((GITHUB_RUN_NUMBER % 6)) -eq 0 ]; then
+            curl -s -o /dev/null -w "%{http_code}" -L https://portfolio-bnw5.onrender.com/health
+          else
+            echo "Skipping full GET this run to save bandwidth."
+          fi

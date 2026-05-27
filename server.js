@@ -25,14 +25,22 @@ app.use(express.json({ limit: '16mb' }));
 
 // Health check for uptime pings and Render keep-alive
 app.get('/health', (req, res) => {
-    res.setHeader('Content-Type', 'text/plain');
     res.setHeader('Connection', 'close');
+    const accept = (req.headers.accept || '').toLowerCase();
+    // If a browser requests /health, redirect immediately to the app root so users see the site
+    if (accept.includes('text/html')) {
+        res.setHeader('Content-Type', 'text/html; charset=utf-8');
+        res.status(200).send('<!doctype html><meta http-equiv="refresh" content="0;url=/" /><title>Redirecting…</title>');
+        return;
+    }
+    // For programmatic pings (CI, cron), return a tiny plain response
+    res.setHeader('Content-Type', 'text/plain');
     res.status(200).send('OK');
 });
 
 app.head('/health', (req, res) => {
-    res.setHeader('Content-Type', 'text/plain');
     res.setHeader('Connection', 'close');
+    res.setHeader('Content-Type', 'text/plain');
     res.sendStatus(200);
 });
 
